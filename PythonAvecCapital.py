@@ -81,26 +81,26 @@ if __name__ == "__main__":
         match state:
             case 0:
                 dip = entry * dipAmplitude
-                print("-------------------- " + str(spot) + " WAITING FOR DROP TO " + str(entry - dip) + " @" + str(now))
+                print("-------------------- SPOT:" + str(spot) + ", WAITING FOR DROP TO " + str(entry - dip) + " @" + str(now))
                 if spot < entry - dip:
                     print("******************** ENTERED @" + str(entry - dip))
                     state = 1
             case 1:
                 recovery = low * recoveryAmplitude
-                print("-------------------- " + str(spot) + " WAITING FOR RECOVERY TO " + str(low + recovery) + " @" + str(now))
+                print("-------------------- SPOT:" + str(spot) + ", WAITING FOR RECOVERY TO " + str(low + recovery) + " @" + str(now))
                 if spot > low + recovery:
                     buyPrice = spot
                     print("******************** BOUGHT @" + str(buyPrice))
                     state = 2
             case 2:
                 pump = low * pumpAmplitude
-                print("-------------------- " + str(spot) + " WAITING FOR PUMP TO " + str(low + pump) + " @" + str(now))
+                print("-------------------- SPOT:" + str(spot) + ", WAITING FOR PUMP TO " + str(low + pump) + " @" + str(now))
                 if spot > low + pump:
                     print("******************** CONFIRMED @" + str(low + pump))
                     state = 3
             case 3:
                 loss = high * lossAmplitude
-                print("-------------------- " + str(spot) + " WAITING FOR DROP TO " + str(high - loss) + " @" + str(now))
+                print("-------------------- SPOT:" + str(spot) + ", WAITING FOR DROP TO " + str(high - loss) + " @" + str(now))
                 if low + (low * pumpAmplitude) < spot < high - loss:
                     sellPrice = spot
                     print("******************** SOLD @" + str(sellPrice) + " & BOUGHT @" + str(buyPrice) + " FOR " + str(
