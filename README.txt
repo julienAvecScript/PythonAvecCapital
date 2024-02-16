@@ -25,7 +25,8 @@ Step 2 - Enter the robot parameters in a parameters.json file like so:
   "dipAmplitude": 0.0*,
   "recoveryAmplitude": 0.0*,
   "pumpAmplitude": 0.0*,
-  "lossAmplitude": 0.0*
+  "lossAmplitude": 0.0*,
+  "positionSize": ***.**,
 }
 
 Step 3 - Install Python 3 and run the following in a Terminal located in the directory of the PythonAvecCapital.pyth script and 2 .json files:
