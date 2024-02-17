@@ -143,6 +143,7 @@ if __name__ == "__main__":
         global high
         global low
 
+        now = datetime.now()
         jsn = json.loads(msg)
         events = jsn["events"]
         try:
@@ -153,10 +154,10 @@ if __name__ == "__main__":
                     spot = float(spotRaw)
                     if spot < low:
                         low = spot
-                        print('******************** DISCOVERED NEW LOW @ ' + str(spot))
+                        log('******************** DISCOVERED NEW LOW @ ' + str(spot) + " @ " + str(now))
                     if spot > high:
                         high = spot
-                        print('******************** DISCOVERED NEW HIGH @ ' + str(spot))
+                        log('******************** DISCOVERED NEW HIGH @ ' + str(spot) + " @ " + str(now))
                         if state == 0 and high > entry:
                             entry = high
                     compute(spot)
