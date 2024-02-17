@@ -3,6 +3,9 @@ WELCOME TO PYTHON AVEC CAPITAL !!!
 v1.0
 
 
+DISCLAIMER: RUNS ONLY IN SANDBOX MODE, HAVEN'T IMPLEMENTED BUYS AND SELLS YET.
+
+
 INTRO
 =====
 In 2021 I coded a rudimentary trading robot in Java. This is the Python version of a similar simplified algorithm. My logic relies strictly on Coinbase tickers to catch dips and peaks in a given crypto's price, buying as low as possible and selling higher for a cash profit.
@@ -25,7 +28,8 @@ Step 2 - Enter the robot parameters in a parameters.json file like so:
   "dipAmplitude": 0.0*,
   "recoveryAmplitude": 0.0*,
   "pumpAmplitude": 0.0*,
-  "lossAmplitude": 0.0*
+  "lossAmplitude": 0.0*,
+  "positionSize": ***.**,
 }
 
 Step 3 - Install Python 3 and run the following in a Terminal located in the directory of the PythonAvecCapital.pyth script and 2 .json files:
