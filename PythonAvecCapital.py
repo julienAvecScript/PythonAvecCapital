@@ -34,7 +34,6 @@ if __name__ == "__main__":
     conf = loadConfig()
     para = loadParameters()
     state = 0
-    symbol = input("What symbol are you trading? ")
     high = 0
     low = 9999999999999999
     buyPrice = 0
@@ -51,6 +50,7 @@ if __name__ == "__main__":
         exit()
 
     client = RESTClient(conf["api_key"], conf["api_secret"])
+    symbol = para["symbol"]
     entry = float(para["entry"])
     dipAmplitude = float(para["dipAmplitude"])
     recoveryAmplitude = float(para["recoveryAmplitude"])
