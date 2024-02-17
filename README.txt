@@ -3,9 +3,6 @@ WELCOME TO PYTHON AVEC CAPITAL !!!
 v1.0
 
 
-DISCLAIMER: RUNS ONLY IN SANDBOX MODE, HAVEN'T IMPLEMENTED BUYS AND SELLS YET.
-
-
 INTRO
 =====
 In 2021 I coded a rudimentary trading robot in Java. This is the Python version of a similar simplified algorithm. My logic relies strictly on Coinbase tickers to catch dips and peaks in a given crypto's price, buying as low as possible and selling higher for a cash profit.
@@ -16,10 +13,8 @@ INSTALLATION
 Step 1 - Create API keys on Coinbase and Coinbase Pro and place each key's api_key and api_secret values in a config.json file like so:
 
 {
-  "apiPRO_key": "organizations/********/apiKeys/*****************",
-  "apiPRO_secret": "-----BEGIN EC PRIVATE KEY-----\\n*****************\\***********************\\n************************************==\\n-----END EC PRIVATE KEY-----\\n",
-  "api_key": "***************",
-  "api_secret": "****************"
+  "api_key": "organizations/********/apiKeys/*****************",
+  "api_secret": "-----BEGIN EC PRIVATE KEY-----\\n*****************\\***********************\\n************************************==\\n-----END EC PRIVATE KEY-----\\n"
 }
 
 Step 2 - Enter the robot parameters in a parameters.json file like so:
