@@ -122,15 +122,15 @@ if __name__ == "__main__":
                     log("******************** BOUGHT @" + str(buyPrice) + " @" + str(now))
                     state = 2
             case 2:
-                pump = low * pumpAmplitude
-                print("-------------------- SPOT:" + str(spot) + " | STATE: 2, WAITING FOR PUMP TO " + str(low + pump) + " @" + str(now))
-                if spot > low + pump:
-                    log("******************** CONFIRMED @" + str(low + pump) + " @" + str(now))
+                pump = buyPrice * pumpAmplitude
+                print("-------------------- SPOT:" + str(spot) + " | STATE: 2, WAITING FOR PUMP TO " + str(buyPrice + pump) + " @" + str(now))
+                if spot > buyPrice + pump:
+                    log("******************** CONFIRMED @" + str(buyPrice + pump) + " @" + str(now))
                     state = 3
             case 3:
                 loss = high * lossAmplitude
                 print("-------------------- SPOT:" + str(spot) + " | STATE: 3, WAITING FOR DROP TO " + str(high - loss) + " @" + str(now))
-                if low + (low * pumpAmplitude) < spot < high - loss:
+                if buyPrice + (buyPrice * pumpAmplitude) < spot < high - loss:
                     sellPrice = spot
                     log("******************** SOLD @" + str(sellPrice) + " & BOUGHT @" + str(buyPrice) + " FOR " + str(sellPrice / buyPrice) + "%! RE-ENTRYING..." + " @" + str(now))
                     log("DEBUG: positionSize/spot=" + str(positionSize/spot))
