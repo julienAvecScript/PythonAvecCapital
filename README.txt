@@ -13,10 +13,8 @@ INSTALLATION
 Step 1 - Create API keys on Coinbase and Coinbase Pro and place each key's api_key and api_secret values in a config.json file like so:
 
 {
-  "apiPRO_key": "organizations/********/apiKeys/*****************",
-  "apiPRO_secret": "-----BEGIN EC PRIVATE KEY-----\\n*****************\\***********************\\n************************************==\\n-----END EC PRIVATE KEY-----\\n",
-  "api_key": "***************",
-  "api_secret": "****************"
+  "api_key": "organizations/********/apiKeys/*****************",
+  "api_secret": "-----BEGIN EC PRIVATE KEY-----\\n*****************\\***********************\\n************************************==\\n-----END EC PRIVATE KEY-----\\n"
 }
 
 Step 2 - Enter the robot parameters in a parameters.json file like so:
