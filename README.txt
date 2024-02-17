@@ -25,6 +25,8 @@ Step 1 - Create API keys on Coinbase and Coinbase Pro and place each key's api_k
 Step 2 - Enter the robot parameters in a parameters.json file like so:
 
 {
+  "symbol": "DOGE-USDC",
+  "entry": 0.08510
   "dipAmplitude": 0.0*,
   "recoveryAmplitude": 0.0*,
   "pumpAmplitude": 0.0*,
