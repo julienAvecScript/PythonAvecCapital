@@ -1,13 +1,12 @@
 import os
 import json
 from datetime import datetime
-
 from coinbase.websocket import WSClient, WSClientConnectionClosedException, WSClientException
-from coinbase.wallet.client import Client
+from coinbase.rest import RESTClient
+import uuid
 
 CONF_FILE_PATH = "config.json"
 PARA_FILE_PATH = "parameters.json"
-
 
 def loadConfig():
     if not os.path.isfile(CONF_FILE_PATH):
@@ -17,8 +16,6 @@ def loadConfig():
         conf = json.load(conf_file)
 
         return {
-            "apiPRO_key": conf["apiPRO_key"],
-            "apiPRO_secret": conf["apiPRO_secret"],
             "api_key": conf["api_key"],
             "api_secret": conf["api_secret"]
         }
@@ -40,7 +37,6 @@ if __name__ == "__main__":
     symbol = input("What symbol are you trading? ")
     high = 0
     low = 9999999999999999
-    entry = 0
     buyPrice = 0
     sellPrice = 0
 
@@ -54,18 +50,50 @@ if __name__ == "__main__":
             "Error: Could not find the parameters file (parameters.json). Did you read the README?")
         exit()
 
-    client = Client(conf["api_key"], conf["api_secret"])
+    client = RESTClient(conf["api_key"], conf["api_secret"])
+    entry = float(para["entry"])
     dipAmplitude = float(para["dipAmplitude"])
     recoveryAmplitude = float(para["recoveryAmplitude"])
     pumpAmplitude = float(para["pumpAmplitude"])
     lossAmplitude = float(para["lossAmplitude"])
+    positionSize = float(para["positionSize"])
 
     try:
-        user = client.get_current_user()
-        print(user)
+        accounts = client.get_accounts()
 
     except Exception as e:
         print(e)
+        accountId = 0
+        exit()
+
+    def log(text):
+        file = open("logs.txt", "w")
+        file.write(text)
+        file.close()
+
+    def buy(quoteSize):
+        try:
+            clientOrderId = uuid.uuid4()
+            order = client.market_order_buy(client_order_id=str(clientOrderId), product_id=symbol, quote_size=str(quoteSize))
+            orderId = order["order_id"]
+            fills = client.get_fills(order_id=orderId)
+            print(json.dumps(fills, indent=2))
+            return orderId
+        except Exception as e:
+            print(e)
+            return 0
+
+    def sell(baseSize):
+        try:
+            clientOrderId = uuid.uuid4()
+            order = client.market_order_sell(client_order_id=str(clientOrderId), product_id=symbol, base_size=str(baseSize))
+            orderId = order["order_id"]
+            fills = client.get_fills(order_id=orderId)
+            print(json.dumps(fills, indent=2))
+            return orderId
+        except Exception as e:
+            print(e)
+            return 0
 
     def compute(spot):
         global state
@@ -81,30 +109,32 @@ if __name__ == "__main__":
         match state:
             case 0:
                 dip = entry * dipAmplitude
-                print("-------------------- SPOT:" + str(spot) + ", WAITING FOR DROP TO " + str(entry - dip) + " @" + str(now))
+                print("-------------------- SPOT:" + str(spot) + " | STATE: 0, WAITING FOR DROP TO " + str(entry - dip) + " @" + str(now))
                 if spot < entry - dip:
-                    print("******************** ENTERED @" + str(entry - dip))
+                    log("******************** ENTERED @" + str(entry - dip) + " @" + str(now))
                     state = 1
             case 1:
                 recovery = low * recoveryAmplitude
-                print("-------------------- SPOT:" + str(spot) + ", WAITING FOR RECOVERY TO " + str(low + recovery) + " @" + str(now))
+                print("-------------------- SPOT:" + str(spot) + " | STATE: 1, WAITING FOR RECOVERY TO " + str(low + recovery) + " @" + str(now))
                 if spot > low + recovery:
                     buyPrice = spot
-                    print("******************** BOUGHT @" + str(buyPrice))
+                    buy(positionSize)
+                    log("******************** BOUGHT @" + str(buyPrice) + " @" + str(now))
                     state = 2
             case 2:
                 pump = low * pumpAmplitude
-                print("-------------------- SPOT:" + str(spot) + ", WAITING FOR PUMP TO " + str(low + pump) + " @" + str(now))
+                print("-------------------- SPOT:" + str(spot) + " | STATE: 2, WAITING FOR PUMP TO " + str(low + pump) + " @" + str(now))
                 if spot > low + pump:
-                    print("******************** CONFIRMED @" + str(low + pump))
+                    log("******************** CONFIRMED @" + str(low + pump) + " @" + str(now))
                     state = 3
             case 3:
                 loss = high * lossAmplitude
-                print("-------------------- SPOT:" + str(spot) + ", WAITING FOR DROP TO " + str(high - loss) + " @" + str(now))
+                print("-------------------- SPOT:" + str(spot) + " | STATE: 3, WAITING FOR DROP TO " + str(high - loss) + " @" + str(now))
                 if low + (low * pumpAmplitude) < spot < high - loss:
                     sellPrice = spot
-                    print("******************** SOLD @" + str(sellPrice) + " & BOUGHT @" + str(buyPrice) + " FOR " + str(
-                        sellPrice / buyPrice) + "%! RE-ENTRYING..." + " @" + str(now))
+                    log("******************** SOLD @" + str(sellPrice) + " & BOUGHT @" + str(buyPrice) + " FOR " + str(sellPrice / buyPrice) + "%! RE-ENTRYING..." + " @" + str(now))
+                    log("DEBUG: positionSize/spot=" + str(positionSize/spot))
+                    sell(positionSize/spot)
                     entry = spot
                     state = 0
 
@@ -127,14 +157,13 @@ if __name__ == "__main__":
                     if spot > high:
                         high = spot
                         print('******************** DISCOVERED NEW HIGH @ ' + str(spot))
-                        if state == 0:
-                            entry = spot
+                        if state == 0 and high > entry:
+                            entry = high
                     compute(spot)
         except Exception as e:
             print(e)
 
-
-    wsClient = WSClient(api_key=conf["apiPRO_key"], api_secret=conf["apiPRO_secret"], on_message=on_message)
+    wsClient = WSClient(api_key=conf["api_key"], api_secret=conf["api_secret"], on_message=on_message)
     try:
         wsClient.open()
         wsClient.subscribe(product_ids=[symbol], channels=["ticker"])
