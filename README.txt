@@ -3,9 +3,6 @@ WELCOME TO PYTHON AVEC CAPITAL !!!
 v1.0
 
 
-DISCLAIMER: RUNS ONLY IN SANDBOX MODE, HAVEN'T IMPLEMENTED BUYS AND SELLS YET.
-
-
 INTRO
 =====
 In 2021 I coded a rudimentary trading robot in Java. This is the Python version of a similar simplified algorithm. My logic relies strictly on Coinbase tickers to catch dips and peaks in a given crypto's price, buying as low as possible and selling higher for a cash profit.
