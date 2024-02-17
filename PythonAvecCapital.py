@@ -67,7 +67,7 @@ if __name__ == "__main__":
         exit()
 
     def log(text):
-        file = open("logs.txt", "w")
+        file = open("logs.txt", "a")
         file.write(text)
         file.close()
 
@@ -163,6 +163,8 @@ if __name__ == "__main__":
         except Exception as e:
             print(e)
 
+    now = datetime.now()
+    log("******************** START @" + str(now))
     wsClient = WSClient(api_key=conf["api_key"], api_secret=conf["api_secret"], on_message=on_message)
     try:
         wsClient.open()
