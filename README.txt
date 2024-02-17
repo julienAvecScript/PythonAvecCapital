@@ -10,12 +10,14 @@ In 2021 I coded a rudimentary trading robot in Java. This is the Python version 
 
 INSTALLATION
 ============
-Step 1 - Create API keys on Coinbase and Coinbase Pro and place each key's api_key and api_secret values in a config.json file like so:
+Step 1 - Create an API key on Coinbase Cloud and place the api_key and api_secret values in a config.json file like so:
 
 {
   "api_key": "organizations/********/apiKeys/*****************",
   "api_secret": "-----BEGIN EC PRIVATE KEY-----\\n*****************\\***********************\\n************************************==\\n-----END EC PRIVATE KEY-----\\n"
 }
+
+IMPORTANT: you need to grant this key "trade" and "view" permissions.
 
 Step 2 - Enter the robot parameters in a parameters.json file like so:
 
