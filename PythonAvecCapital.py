@@ -134,7 +134,7 @@ if __name__ == "__main__":
                     entry = spot
                     state = 0
 
-    def on_message(msg):
+    def onMessage(msg):
         global entry
         global high
         global low
@@ -162,7 +162,7 @@ if __name__ == "__main__":
 
     now = datetime.now()
     log("******************** START @" + str(now))
-    wsClient = WSClient(api_key=conf["api_key"], api_secret=conf["api_secret"], on_message=on_message)
+    wsClient = WSClient(api_key=conf["api_key"], api_secret=conf["api_secret"], on_message=onMessage)
     try:
         wsClient.open()
         wsClient.subscribe(product_ids=[symbol], channels=["ticker"])
