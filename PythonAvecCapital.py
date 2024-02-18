@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     def log(text):
         file = open("logs.txt", "a")
-        file.write(text)
+        file.write(text + "\n")
         file.close()
 
     def buy(quoteSize):
@@ -76,8 +76,6 @@ if __name__ == "__main__":
             clientOrderId = uuid.uuid4()
             order = client.market_order_buy(client_order_id=str(clientOrderId), product_id=symbol, quote_size=str(quoteSize))
             orderId = order["order_id"]
-            fills = client.get_fills(order_id=orderId)
-            print(json.dumps(fills, indent=2))
             return orderId
         except Exception as e:
             print(e)
@@ -88,8 +86,6 @@ if __name__ == "__main__":
             clientOrderId = uuid.uuid4()
             order = client.market_order_sell(client_order_id=str(clientOrderId), product_id=symbol, base_size=str(baseSize))
             orderId = order["order_id"]
-            fills = client.get_fills(order_id=orderId)
-            print(json.dumps(fills, indent=2))
             return orderId
         except Exception as e:
             print(e)
