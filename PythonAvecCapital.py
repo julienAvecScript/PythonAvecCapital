@@ -7,6 +7,7 @@ import uuid
 
 CONF_FILE_PATH = "config.json"
 PARA_FILE_PATH = "parameters.json"
+FEE_RATE = 0.065
 
 def loadConfig():
     if not os.path.isfile(CONF_FILE_PATH):
@@ -57,6 +58,7 @@ if __name__ == "__main__":
     pumpAmplitude = float(para["pumpAmplitude"])
     lossAmplitude = float(para["lossAmplitude"])
     positionSize = float(para["positionSize"])
+    positionAmount = 0
 
     try:
         accounts = client.get_accounts()
@@ -76,17 +78,24 @@ if __name__ == "__main__":
             clientOrderId = uuid.uuid4()
             order = client.market_order_buy(client_order_id=str(clientOrderId), product_id=symbol, quote_size=str(quoteSize))
             orderId = order["order_id"]
-            return orderId
+            filledOrder = client.get_order(order_id=orderId)
+            filledSize = float(filledOrder["order"]["filled_size"])
+            return filledSize
         except Exception as e:
             print(e)
             return 0
 
     def sell(baseSize):
         try:
+            currencies = client.get_product(product_id=symbol)
+            lng = len(currencies["base_increment"])-2
             clientOrderId = uuid.uuid4()
-            order = client.market_order_sell(client_order_id=str(clientOrderId), product_id=symbol, base_size=str(baseSize))
+            order = client.market_order_sell(client_order_id=str(clientOrderId), product_id=symbol, base_size=str(round(baseSize, lng)))
             orderId = order["order_id"]
-            return orderId
+            filledOrder = client.get_order(order_id=orderId)
+            print(filledOrder)
+            filledValue = float(filledOrder["order"]["filled_value"])
+            return filledValue
         except Exception as e:
             print(e)
             return 0
@@ -100,6 +109,8 @@ if __name__ == "__main__":
         global lossAmplitude
         global buyPrice
         global sellPrice
+        global positionSize
+        global positionAmount
         now = datetime.now()
 
         match state:
@@ -114,7 +125,7 @@ if __name__ == "__main__":
                 print("-------------------- SPOT:" + str(spot) + " | STATE: 1, WAITING FOR RECOVERY TO " + str(low + recovery) + " @" + str(now))
                 if spot > low + recovery:
                     buyPrice = spot
-                    buy(positionSize)
+                    positionAmount = buy(positionSize)
                     log("******************** BOUGHT @" + str(buyPrice) + " @" + str(now))
                     state = 2
             case 2:
@@ -129,8 +140,7 @@ if __name__ == "__main__":
                 if buyPrice + (buyPrice * pumpAmplitude) < spot < high - loss:
                     sellPrice = spot
                     log("******************** SOLD @" + str(sellPrice) + " & BOUGHT @" + str(buyPrice) + " FOR " + str(sellPrice / buyPrice) + "%! RE-ENTRYING..." + " @" + str(now))
-                    log("DEBUG: positionSize/spot=" + str(positionSize/spot))
-                    sell(positionSize/spot)
+                    positionSize = sell(positionAmount)
                     entry = spot
                     state = 0
 
@@ -161,6 +171,7 @@ if __name__ == "__main__":
             print(e)
 
     now = datetime.now()
+
     log("******************** START @" + str(now))
     wsClient = WSClient(api_key=conf["api_key"], api_secret=conf["api_secret"], on_message=onMessage)
     try:
